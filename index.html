@@ -1,1 +1,45 @@
-test
+test2
+
+<script>
+    async function fetchData() {
+      try {
+        const response = await fetch('/api/airtable');
+        
+        if (!response.ok) {
+          throw new Error('Veri çekme işlemi başarısız oldu.');
+        }
+  
+        const data = await response.json();
+        const sortedData = data.records.sort((a, b) => a.fields.ID - b.fields.ID);
+        displayData(sortedData);
+      } catch (error) {
+        console.error('Hata:', error);
+        document.getElementById('data-table').innerHTML = '<p>Veriler yüklenirken bir hata oluştu.</p>';
+      }
+    }
+  
+    // Verileri HTML tablosuna ekleme
+    function displayData(records) {
+      const tbody = document.querySelector('#data-table tbody');
+      tbody.innerHTML = '';
+  
+      if (records.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4">Tabloda veri bulunamadı.</td></tr>';
+        return;
+      }
+  
+      records.forEach(record => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${record.fields.ID || ''}</td>
+          <td>${record.fields.Name || ''}</td>
+          <td>${record.fields.Username || ''}</td>
+          <td>${record.fields.Email || ''}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+  
+    document.addEventListener('DOMContentLoaded', fetchData);
+  </script>
+  
